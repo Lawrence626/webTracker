@@ -5,8 +5,9 @@ using BHWTracker.Services;
 using System.IO;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
-var builder = WebApplication.CreateBuilder(args);
+Environment.SetEnvironmentVariable("DOTNET_USE_POLLING_FILE_WATCHER", "1");
 
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 builder.Services.AddControllers();
@@ -14,9 +15,18 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    options.UseMySql(
-        connectionString,
-        new MySqlServerVersion(new Version(8, 0, 0))
+    
+    // Support environment variable override for production
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+            ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? throw new InvalidOperationException("Database connection string not found. Set DATABASE_URL environment variable.");
+    }
+    
+   options.UseMySql(
+    connectionString,
+    ServerVersion.AutoDetect(connectionString)
     );
 });
 
@@ -38,22 +48,26 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-  
-        dbContext.Database.EnsureCreated();
-        Console.WriteLine(" Database schema ensured successfully!");
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        if (dbContext.Database.CanConnect())
+        {
+            Console.WriteLine("Database connected successfully!");
+        }
+        else
+        {
+            Console.WriteLine("Cannot connect to database.");
+        }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($" Database schema error: {ex.Message}");
+        Console.WriteLine($"Database connection error: {ex.Message}");
     }
 }
-
 
 app.UseCors("AllowFrontend");
 app.UseRouting();
@@ -61,24 +75,36 @@ app.UseAuthorization();
 
 
 string webRootPath = app.Environment.WebRootPath;
-if (!Directory.Exists(webRootPath)) 
-    Directory.CreateDirectory(webRootPath);
-
-app.UseStaticFiles(new StaticFileOptions
+if (string.IsNullOrEmpty(webRootPath))
 {
-    FileProvider = new PhysicalFileProvider(webRootPath),
-    RequestPath = ""
-});
+    webRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+}
 
-string uploadsPath = Path.Combine(webRootPath, "uploads");
-if (!Directory.Exists(uploadsPath)) 
-    Directory.CreateDirectory(uploadsPath);
-
-app.UseStaticFiles(new StaticFileOptions
+try
 {
-    FileProvider = new PhysicalFileProvider(uploadsPath),
-    RequestPath = "/uploads"
-});
+    if (!Directory.Exists(webRootPath)) 
+        Directory.CreateDirectory(webRootPath);
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(webRootPath),
+        RequestPath = ""
+    });
+
+    string uploadsPath = Path.Combine(webRootPath, "uploads");
+    if (!Directory.Exists(uploadsPath)) 
+        Directory.CreateDirectory(uploadsPath);
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(uploadsPath),
+        RequestPath = "/uploads"
+    });
+}
+catch (Exception ex)
+{
+    Console.WriteLine($" Warning: Static files error: {ex.Message}");
+}
 
 app.MapControllers();
 
