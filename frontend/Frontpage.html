@@ -375,7 +375,12 @@
     </div>
   </footer>
 
+  
   <script>
+    // Gamitin ang Render URL kung nasa production, localhost kung nasa development
+    const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:5236' 
+    : 'https://webtracker-oir7.onrender.com';
       // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
@@ -473,7 +478,7 @@
 
       try {
         //  STEP 1: Verify Email is Legitimate
-        const verifyRes = await fetch('http://localhost:5236/api/auth/verify-email', {
+        const verifyRes = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
@@ -487,7 +492,7 @@
         }
 
         //  STEP 2: Send Verification Code
-        const sendCodeRes = await fetch('http://localhost:5236/api/auth/send-login-code', {
+        const sendCodeRes = await fetch(`${API_BASE_URL}/api/auth/send-login-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -512,7 +517,7 @@
         }
 
         //  STEP 4: Verify the Code
-        const verifyCodeRes = await fetch('http://localhost:5236/api/auth/verify-login-code', {
+        const verifyCodeRes = await fetch(`${API_BASE_URL}/api/auth/verify-login-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, code: verificationCode })
@@ -576,7 +581,7 @@
 
       try {
         // Step 1: Request password reset
-        const response = await fetch('http://localhost:5236/api/auth/forgot-password', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
@@ -665,7 +670,7 @@
 
       try {
         // Reset the password
-        const resetRes = await fetch('http://localhost:5236/api/auth/reset-password', {
+        const resetRes = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, newPassword })
@@ -686,13 +691,7 @@
       }
     }
 
-    // ✅ SIGN UP HANDLER - DISABLED
-    // Sign up functionality has been removed
-
-    // PASSWORD CONFIRMATION CHECK - DISABLED
-    // Sign up form removed, no longer needed
-
-    // Close modal when clicking outside
+  
     document.addEventListener('click', function(e) {
       const modal = document.getElementById('authModal');
       if (e.target === modal) {
