@@ -26,5 +26,6 @@ COPY --from=build /app/publish .
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:10000
 ENV ASPNETCORE_ENVIRONMENT=Production
+ENV DOTNET_EnableDiagnostics=0
 
 ENTRYPOINT ["dotnet", "BHWTracker.dll"]

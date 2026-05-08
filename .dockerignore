@@ -1,0 +1,13 @@
+bin/
+obj/
+.git
+.gitignore
+.vs/
+.vscode/
+*.user
+*.suo
+node_modules/
+dist/
+build/
+.DS_Store
+Thumbs.db
