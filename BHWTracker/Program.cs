@@ -69,45 +69,44 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// ... (keep your database and CORS code at the top)
+
 app.UseCors("AllowFrontend");
 app.UseRouting();
 app.UseAuthorization();
 
+// HANAPIN ANG TAMANG PATH
+string webRootPath = app.Environment.WebRootPath ?? Path.Combine(AppContext.BaseDirectory, "wwwroot");
 
-string webRootPath = app.Environment.WebRootPath;
-if (string.IsNullOrEmpty(webRootPath))
+if (!Directory.Exists(webRootPath)) 
 {
-    webRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+    Directory.CreateDirectory(webRootPath);
 }
 
-try
+// --- ITO ANG DAGDAG NA KAILANGAN MO ---
+// Pinapayagan ang app na gamitin ang Frontpage.html bilang default page
+var defaultFilesOptions = new DefaultFilesOptions();
+defaultFilesOptions.DefaultFileNames.Clear();
+defaultFilesOptions.DefaultFileNames.Add("Frontpage.html"); 
+app.UseDefaultFiles(defaultFilesOptions);
+// --------------------------------------
+
+// I-serve ang files mula sa wwwroot
+app.UseStaticFiles(new StaticFileOptions
 {
-    if (!Directory.Exists(webRootPath)) 
-        Directory.CreateDirectory(webRootPath);
+    FileProvider = new PhysicalFileProvider(webRootPath),
+    RequestPath = ""
+});
 
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new PhysicalFileProvider(webRootPath),
-        RequestPath = ""
-    });
+// I-serve ang uploads
+string uploadsPath = Path.Combine(webRootPath, "uploads");
+if (!Directory.Exists(uploadsPath)) Directory.CreateDirectory(uploadsPath);
 
-    string uploadsPath = Path.Combine(webRootPath, "uploads");
-    if (!Directory.Exists(uploadsPath)) 
-        Directory.CreateDirectory(uploadsPath);
-
-    app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new PhysicalFileProvider(uploadsPath),
-        RequestPath = "/uploads"
-    });
-}
-catch (Exception ex)
+app.UseStaticFiles(new StaticFileOptions
 {
-    Console.WriteLine($" Warning: Static files error: {ex.Message}");
-}
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
 
 app.MapControllers();
-
-
-
 app.Run();
