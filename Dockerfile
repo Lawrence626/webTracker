@@ -1,31 +1,29 @@
 # Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-WORKDIR /app
+WORKDIR /src
 
-# Copy project files
-COPY BHWTracker/BHWTracker.csproj ./BHWTracker/
-RUN dotnet restore BHWTracker/BHWTracker.csproj
+# Gamitin ang tamang Case ng folder name mo (Double check kung BHWTracker o BhwTracker)
+COPY ["BHWTracker/BHWTracker.csproj", "BHWTracker/"]
+RUN dotnet restore "BHWTracker/BHWTracker.csproj"
 
-# Copy all source code
+# Copy lahat ng files
 COPY . .
-
-# Build the application
-RUN dotnet build BHWTracker/BHWTracker.csproj -c Release -o out
-
-# Publish stage
-RUN dotnet publish BHWTracker/BHWTracker.csproj -c Release -o publish
+WORKDIR "/src/BHWTracker"
+RUN dotnet publish "BHWTracker.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 EXPOSE 10000
 
-# Copy published app from build stage
+# Copy from build stage
 COPY --from=build /app/publish .
 
-# Set environment variables
+# Siguraduhin na may uploads folder
+RUN mkdir -p /app/wwwroot/uploads
+
+# Render PORT setup
 ENV ASPNETCORE_URLS=http://+:10000
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV DOTNET_EnableDiagnostics=0
 
 ENTRYPOINT ["dotnet", "BHWTracker.dll"]
