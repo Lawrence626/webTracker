@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>BHW Panel - BHW's Tracker</title>
+  <link rel="stylesheet" href="css/bhw.css?v=2025-11-20-004">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+
+</head>
+
+<body>
+  <div class="bhw-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header" onclick="showSection('profile')">
+        <div class="profile-initials" id="profileInitials"></div>
+        <div class="profile-name" id="profileName"></div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-btn active" data-section="dashboard">
+          <i class="fa-solid fa-border-all"></i> Dashboard</button>
+
+        <button class="nav-btn" data-section="residents">
+          <i class="fa-solid fa-user-group"></i> Residents</button>
+
+        <button class="nav-btn" data-section="status">
+          <i class="fa-solid fa-chart-simple"></i> Status </button>
+
+        <button class="nav-btn" data-section="map">
+          <i class="fa fa-map"></i> Map</button>
+      </nav>
+
+      <button class="btn-logout" onclick="logout()">
+        <i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+      <section id="profile" class="section">
+        <div class="profile-container">
+          <!-- Left: Profile Image -->
+          <div class="profile-info">
+            <div class="profile-pic">
+              <img id="profileImage" src="logo/logo.png" alt="Profile Picture">
+            </div>
+            <input type="file" id="uploadProfile" accept="image/*" hidden>
+            <button class="btn-upload" onclick="document.getElementById('uploadProfile').click()">Change
+              Picture</button>
+            <h3 class="role" id="profileRole"></h3>
+
+          </div>
+
+          <!-- Right: Profile Details -->
+          <div class="profile-details">
+            <div class="details-header">
+              <h2>Personal Info</h2>
+              <button class="btn-edit" onclick="openEditProfileModal()">Edit Profile</button>
+            </div>
+            <p><strong>Name:</strong> <span id="adminName"></span></p>
+            <p><strong>Age:</strong> <span id="adminAge"></span></p>
+            <p><strong>Birthday:</strong> <span id="adminBirthday"></span></p>
+            <p><strong>Email:</strong> <span id="adminEmail"></span></p>
+            <p><strong>Contact:</strong> <span id="adminContact"></span></p>
+            <p><strong>Address:</strong> <span id="adminAddress"></span></p>
+            <p><strong>Years of Service:</strong> <span id="adminYears"></span></p>
+          </div>
+        </div>
+
+        <!-- Certifications & Achievements Section -->
+        <div class="card">
+          <div class="cert-header">
+            <h3>Certifications & Achievements</h3>
+            <button class="btn-add-cert" onclick="openAddCertModal()">
+              <i class="fa-solid fa-plus"></i> Add Certification
+            </button>
+          </div>
+          <div id="certificationsList" class="certifications-grid">
+            <div class="empty-state">
+              <i class="fa-solid fa-certificate" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
+              <p>No certifications added yet</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===== Add Certification Modal ===== -->
+      <div id="addCertModal" class="modal hidden">
+        <div class="modal-content" style="width: 600px;">
+          <span class="close-btn" onclick="closeAddCertModal()">&times;</span>
+
+          <h2 style="color: white;
+                    font-size: 22px;
+                    margin-bottom: 25px;
+                    background: linear-gradient(135deg, #0066cc 0%, #00b894 100%);
+                    padding: 20px;
+                    margin: -33px -33px 30px -33px;
+                    border-radius: 8px 8px 0 0;">
+            <i class="fa-solid fa-certificate"></i> Add Certification / Achievement
+          </h2>
+          <form id="addCertForm">
+            <div class="form-group">
+              <label>Title:</label>
+              <input type="text" id="certTitle" placeholder="e.g., First Aid Certification" required>
+            </div>
+
+            <div class="form-group">
+              <label>Issuing Organization:</label>
+              <input type="text" id="certOrganization" placeholder="e.g., Philippine Red Cross" required>
+            </div>
+
+            <div class="form-group">
+              <label>Date Received:</label>
+              <input type="date" id="certDate" required>
+            </div>
+
+            <div class="form-group">
+              <label>Description (Optional):</label>
+              <textarea id="certDescription" placeholder="Add any additional details..." rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Certificate Link:</label>
+              <input type="url" id="certLink" placeholder="e.g., https://example.com/certificate">
+            </div>
+
+            <div class="form-group">
+              <label>Upload Document:</label>
+              <div class="document-upload-wrapper">
+                <input type="file" id="certDocument" accept=".pdf,.doc,.docx,.xlsx,.xls,.ppt,.pptx"
+                  onchange="previewCertDocument()">
+                <div id="certDocumentPreview" class="document-preview-placeholder">
+                  <i class="fa-solid fa-file-pdf"></i>
+                  <p>Click to upload document</p>
+                  <small>Supported: PDF, Word, Excel, PowerPoint</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="submit" class="save-btn" style="flex: 1;">
+                <i class="fa-solid fa-check"></i> Add Certification
+              </button>
+              <button type="button" class="cancel-btn" onclick="closeAddCertModal()" style="flex: 1;">
+                <i class="fa-solid fa-times"></i> Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ===== Edit Profile Modal ===== -->
+      <div id="editProfileModal" class="modal hidden">
+        <div class="modal-content">
+          <span class="close-btn" onclick="closeEditProfileModal()">&times;</span>
+
+          <h2>Edit Profile</h2>
+          <form id="editProfileForm">
+            <label>First Name:</label>
+            <input type="text" id="editFirstname" required>
+
+            <label>Middle Name: (Optional)</label>
+            <input type="text" id="editMiddlename">
+
+            <label>Surname:</label>
+            <input type="text" id="editSurname" required>
+
+            <label>Age:</label>
+            <input type="number" id="editAge" required>
+
+            <label>Birthday:</label>
+            <input type="date" id="editBirthday" required>
+
+            <label>Email:</label>
+            <input type="email" id="editEmail">
+
+            <label>Contact:</label>
+            <input type="text" id="editContact">
+
+            <label>Address:</label>
+            <input type="text" id="editAddress">
+
+
+            <label>Years of Service:</label>
+            <input type="number" id="editYears">
+
+            <div class="modal-actions">
+              <button type="submit" class="save-btn">Save Changes</button>
+              <button type="button" class="cancel-btn" onclick="closeEditProfileModal()">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <section id="dashboard" class="section active">
+        <div class="dashboard-header">
+          <div class="dashboard-greeting">
+            <h1>Welcome, BHW Dashboard</h1>
+            <p id="userGreeting">Nathalie Angel Umali</p>
+          </div>
+          <button class="add-btn-dashboard" onclick="toggleResidentForm()">
+            <i class="fa-solid fa-plus"></i> Add New Resident
+          </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="dashboard-stats">
+          <div class="stat-card" onclick="showStatModal('all')">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #0066cc 0%, #00b894 100%);">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Total Residents</p>
+              <h3 id="totalResidents" class="stat-value">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card" onclick="showStatModal('illness')">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);">
+              <i class="fa-solid fa-heartbeat"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">With Illness</p>
+              <h3 id="illnessCount" class="stat-value">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card" onclick="showStatModal('ownhouse')">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #ffa500 0%, #ffb84d 100%);">
+              <i class="fa-solid fa-house"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Own House</p>
+              <h3 id="ownHouseCount" class="stat-value">0</h3>
+            </div>
+          </div>
+
+          <div class="stat-card" onclick="showStatModal('renting')">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+              <i class="fa-solid fa-building"></i>
+            </div>
+            <div class="stat-content">
+              <p class="stat-label">Renting House</p>
+              <h3 id="rentingCount" class="stat-value">0</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Carousel -->
+        <div class="carousel-section">
+
+          <div class="carousel">
+            <!-- Pause/Play Button -->
+            <button id="toggleBtn" class="toggle-btn">⏸</button>
+
+            <!-- Slides -->
+            <div class="slide active">
+              <img src="logo/logooo.jpg" alt="First Aid">
+            </div>
+            <div class="slide">
+              <img src="logo/doc.jpg" alt="Health Seminar">
+            </div>
+            <div class="slide">
+              <img src="logo/seminars.jpg" alt="Health Awareness">
+            </div>
+
+            <!-- Arrows -->
+            <button class="prev">&#10094;</button>
+            <button class="next">&#10095;</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Section (Charts) -->
+      <section id="status" class="section">
+        <h1>Health Status Overview</h1>
+
+        <!-- Charts -->
+        <div class="card">
+          <h3>Illness Charts - BRGY SAN FRANCISCO</h3>
+          <div class="chart-row">
+            <div style="width: 100%; height: 400px;">
+              <canvas id="barChart"></canvas>
+            </div>
+            <div style="width: 100%; height: 400px;">
+              <canvas id="areaChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Residents Section -->
+      <section id="residents" class="section">
+
+        <h1>
+          Residents Management
+        </h1>
+
+
+        <div class="residents-controls">
+          <div class="left-buttons">
+            <button class="add-btn" onclick="toggleResidentForm()">+ Add New Resident</button>
+            <button class="add-btn" onclick="exportResidents()">Export</button>
+            <input type="file" id="importFile" accept=".xlsx,.csv,.json" hidden onchange="importResidents(event)">
+            <button class="add-btn" onclick="document.getElementById('importFile').click()">Import</button>
+          </div>
+
+          <div class="right-search">
+            <input type="text" id="residentSearch" placeholder="Search Residents...">
+            
+            <!-- 3-Dot Menu for View Options -->
+            <div class="view-menu-container">
+              <button class="menu-btn" onclick="toggleViewMenu()">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <div id="viewDropdown" class="view-dropdown hidden">
+                <button class="dropdown-item" onclick="switchResidentView('grid')">
+                  <i class="fas fa-th-large"></i> Grid View
+                </button>
+                <button class="dropdown-item" onclick="switchResidentView('list')">
+                  <i class="fas fa-list"></i> List View
+                </button>
+                <button class="dropdown-item" onclick="switchResidentView('table')">
+                  <i class="fas fa-table"></i> Table View
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Pagination Controls -->
+        <div class="residents-filter-pagination">
+          <div class="filter-buttons">
+            <button class="filter-btn" id="filterAll" onclick="filterResidents('all')" style="background: #0066cc; color: white;">All</button>
+            <button class="filter-btn" id="filterSenior" onclick="filterResidents('senior')"><i class="fas fa-user-tie"></i> Senior (60+)</button>
+            <button class="filter-btn" id="filterChild" onclick="filterResidents('child')"><i class="fas fa-child"></i> Child (≤17)</button>
+            <button class="filter-btn" id="filterPwd" onclick="filterResidents('pwd')"><i class="fas fa-wheelchair"></i> PWD</button>
+          </div>
+
+          <div class="pagination-controls">
+            <label>Items per page:</label>
+            <select id="itemsPerPage" onchange="changeItemsPerPage(this.value)">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+            <div class="pagination-buttons">
+              <button class="pagination-btn" onclick="previousPage()" id="prevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+              <span id="pageInfo" class="page-info">Page 1 of 1</span>
+              <button class="pagination-btn" onclick="nextPage()" id="nextBtn">Next <i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+
+        <div id="residentsList" class="residents-list"></div>
+      </section>
+
+
+
+      <!-- Map Section -->
+      <section id="map" class="section">
+        <h1>Barangay San Francisco Map</h1>
+        <div class="map-wrapper">
+          <div id="mapContainer"></div>
+          <div id="mapDetailsPanel" class="map-details-panel hidden">
+            <div class="map-details-content">
+              <button class="map-details-close" onclick="closeMapDetails()">
+                <i class="fas fa-times"></i>
+              </button>
+              <div id="mapDetailsBody"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Resident Modal -->
+  <!-- Resident Modal -->
+  <div id="residentModal" class="modal hidden">
+    <div class="modal-content" style="max-width: 900px; width: 90%;">
+      <span class="close-btn" onclick="toggleResidentForm()">&times;</span>
+      <h2
+        style="background: linear-gradient(135deg, #0066cc 0%, #00b894 100%); color: white; padding: 25px; margin: -24px -24px 30px -24px; border-radius: 12px 12px 0 0; text-align: center; font-size: 24px;">
+        Add New Resident
+      </h2>
+      <form id="residentForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Surname <span class="required">*</span></label>
+            <input type="text" id="surname" required>
+          </div>
+          <div class="form-group">
+            <label>First Name <span class="required">*</span></label>
+            <input type="text" id="firstname" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Middle Name (Optional)</label>
+            <input type="text" id="middlename" placeholder="(If applicable)">
+          </div>
+          <div class="form-group">
+            <label>Age <span class="required">*</span></label>
+            <input type="number" id="age" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Birthday <span class="required">*</span></label>
+            <input type="date" id="birthday" required>
+          </div>
+          <div class="form-group">
+            <label>Years in Barangay <span class="required">*</span></label>
+            <input type="number" id="years" placeholder="Years living in BRGY SAN FRANCISCO" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Address <span class="required">*</span></label>
+            <div class="address-field">
+              <input type="text" id="address" required>
+              <span class="map-pin-icon" onclick="openMapPicker()">📍</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Contact Number <span class="required">*</span></label>
+            <input type="text" id="contact" placeholder="09XXXXXXXXX" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Occupation (Optional)</label>
+            <input type="text" id="occupation">
+          </div>
+          <div class="form-group">
+            <label>Housing Status <span class="required">*</span></label>
+            <select id="house" required>
+              <option value="">Select Status</option>
+              <option value="Own">Own</option>
+              <option value="Renting">Renting</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Blood Type</label>
+            <input type="text" id="bloodType">
+          </div>
+          <div class="form-group">
+            <label>Illness</label>
+            <input type="text" id="illness" placeholder="(If applicable)">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Civil Status</label>
+            <input type="text" id="civilStatus">
+          </div>
+          <div class="form-group">
+            <label>Educational Attainment</label>
+            <input type="text" id="education">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Number of Children</label>
+            <input type="number" id="children" placeholder="(If applicable)">
+          </div>
+          <div class="form-group" style="visibility: hidden;">
+            <!-- Spacer -->
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+              <input type="checkbox" id="isPwd" style="width: 18px; height: 18px; cursor: pointer;">
+              <span>Person with Disability (PWD)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Hidden fields for coordinates -->
+        <input type="hidden" id="mapX" name="mapX">
+        <input type="hidden" id="mapY" name="mapY">
+
+        <div class="modal-actions">
+          <button type="submit" class="save-btn">
+            <i class="fa-solid fa-check"></i> Save Resident
+          </button>
+          <button type="button" class="cancel-btn" onclick="toggleResidentForm()">
+            <i class="fa-solid fa-times"></i> Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Map Picker Modal -->
+  <div id="mapPickerModal" class="modal hidden">
+    <div class="modal-content" style="width: 90%; max-width: 800px;">
+      <span class="close-btn" onclick="closeMapPicker()">&times;</span>
+      <h2>Select Resident Location</h2>
+      <div id="mapPicker" style="height:400px;"></div>
+      <div style="margin-top:10px; text-align:right;">
+        <button type="button" onclick="closeMapPicker()" class="save-btn">Confirm Location</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stat Modal (for displaying lists when stat cards are clicked) -->
+  <div id="statModal" class="modal hidden">
+    <div class="modal-content" style="width: 90%; max-width: 900px; max-height: 80vh; overflow-y: auto;">
+      <span class="close-btn" onclick="closeStatModal()">&times;</span>
+      <h2 id="statModalTitle">Residents List</h2>
+      <div id="statModalContent" style="margin-top: 20px;">
+        <!-- List will be populated here -->
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="js/bhw.js"></script>
+</body>
+
+</html>

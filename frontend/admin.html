@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - BHW's Tracker</title>
+    <link rel="stylesheet" href="css/admin.css?v=2025-11-23-005">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <div class="admin-container">
+        <aside class="sidebar">
+            <div class="sidebar-header" onclick="showSection('profile')">
+                <div class="profile-initials" id="profileInitials">A</div>
+                <div class="profile-name" id="profileName">Admin</div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-btn" data-section="dashboard" onclick="showSection('dashboard')">
+                    <i class="fa-solid fa-border-all"></i> Dashboard</button>
+
+                <button class="nav-btn" data-section="workers" onclick="showSection('workers')">
+                    <i class="fa-solid fa-user-group"></i> Barangay Health Worker's</button>
+
+                <button class="nav-btn" data-section="status" onclick="showSection('status')">
+                    <i class="fa-solid fa-chart-simple"></i> Status</button>
+
+                <button class="nav-btn" onclick="window.location.href='emails.html'">
+                    <i class="fa-solid fa-envelope"></i> Email Management</button>
+            </nav>
+
+            <button class="btn-logout" onclick="logout()">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+
+        </aside>
+
+        <main class="content">
+            <section id="dashboard" class="section active">
+                <h1>Welcome, Admin Dashboard</h1>
+                <p id="adminWelcomeName" style="font-size: 16px; color: #666; margin-top: 
+                -10px; margin-bottom: 20px; font-weight: 500; margin-left: 5px;"></p>
+
+                <div class="top-actions">
+                    <button onclick="addBhw()">+ Add New BHW</button>
+
+                    <div class="search-with-notif">
+                        <div class="notification" onclick="toggleNotificationDropdown(event)">
+                            <span class="bell">&#128276;</span>
+                            <span class="badge" id="notificationBadge">0</span>
+
+                            <!-- Notification Dropdown -->
+                            <div class="notification-dropdown" id="notificationDropdown">
+                                <div class="notification-header">
+                                    <h3>Notifications</h3>
+                                    <button class="clear-notif"
+                                        onclick="event.stopPropagation(); clearAllNotifications()">Clear All</button>
+                                </div>
+                                <div class="notification-list" id="notificationList">
+                                    <div class="empty-notification">No notifications yet</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="status-wrapper">
+
+                    <div class="mini-card mini-approved" onclick="openApprovedModal()">
+                        <div class="icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="details">
+                            <span class="label">Approved BHWs</span>
+                            <span class="value" id="approvedCount">0</span>
+                        </div>
+                    </div>
+
+                    <div class="mini-card mini-pending" onclick="openPendingModal()">
+                        <div class="icon">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
+                        <div class="details">
+                            <span class="label">Pending BHWs</span>
+                            <span class="value" id="pendingCount">0</span>
+                        </div>
+                    </div>
+
+
+                    <div class="mini-card mini-rejected" onclick="openRejectedModal()">
+                        <div class="icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                        <div class="details">
+                            <span class="label">Rejected BHWs</span>
+                            <span class="value" id="rejectedCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APPROVED MODAL -->
+                <div id="approvedModal" class="modal">
+                    <div class="modal-content approve-box" style="width: 90%; max-width: 1000px;">
+                        <span class="close" onclick="closeApprovedModal()">&times;</span>
+                        <h2
+                            style="background: linear-gradient(135deg, #00b894 0%, #0066cc 100%); color: white; padding: 20px; margin: -24px -24px 25px -24px; border-radius: 12px 12px 0 0; text-align: center; font-size: 22px;">
+                            <i class="fas fa-check-circle"></i> Approved BHW Accounts
+                        </h2>
+                        <div id="approvedModalContent" style="margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- PENDING MODAL -->
+                <div id="pendingModal" class="modal">
+                    <div class="modal-content pending-box" style="width: 90%; max-width: 1000px;">
+                        <span class="close" onclick="closePendingModal()">&times;</span>
+                        <h2
+                            style="background: linear-gradient(135deg, #ffa500 0%, #ffb84d 100%); color: white; padding: 20px; margin: -24px -24px 25px -24px; border-radius: 12px 12px 0 0; text-align: center; font-size: 22px;">
+                            <i class="fas fa-hourglass-half"></i> Pending BHW Accounts
+                        </h2>
+                        <div id="pendingModalContent" style="margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+                <!-- REJECTED MODAL -->
+                <div id="rejectedModal" class="modal">
+                    <div class="modal-content reject-box" style="width: 90%; max-width: 1000px;">
+                        <span class="close" onclick="closeRejectedModal()">&times;</span>
+                        <h2
+                            style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%); color: white; padding: 20px; margin: -24px -24px 25px -24px; border-radius: 12px 12px 0 0; text-align: center; font-size: 22px;">
+                            <i class="fas fa-times-circle"></i> Rejected BHW Accounts
+                        </h2>
+                        <div id="rejectedModalContent" style="margin-top: 20px;"></div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="card">
+                    <h3>Illness Charts - BRGY SAN FRANCISCO</h3>
+                    <div class="chart-row">
+                        <canvas id="barChart"></canvas>
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <div id="editProfileModal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditProfileModal()">&times;</span>
+                    <h2>Edit Profile</h2>
+                    <form id="editProfileForm">
+                        <label>First Name:</label>
+                        <input type="text" id="editFirstname" required>
+
+                        <label>Middle Name: (Optional)</label>
+                        <input type="text" id="editMiddlename">
+
+                        <label>Surname:</label>
+                        <input type="text" id="editSurname" required>
+
+                        <label>Age:</label>
+                        <input type="number" id="editAge" required>
+
+                        <label>Birthday:</label>
+                        <input type="date" id="editBirthday" required>
+
+                        <label>Email:</label>
+                        <input type="email" id="editEmail">
+
+                        <label>Contact:</label>
+                        <input type="text" id="editContact">
+
+                        <label>Address:</label>
+                        <input type="text" id="editAddress">
+
+                        <label>Years of Service:</label>
+                        <input type="number" id="editYears">
+
+                        <div class="modal-actions">
+                            <button type="submit" class="save-btn">Save Changes</button>
+                            <button type="button" class="cancel-btn" onclick="closeEditProfileModal()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <section id="profile" class="section">
+                <div class="profile-container">
+                    <div class="profile-info">
+                        <div class="profile-pic">
+                            <img id="profileImage" src="logo/logo.png" alt="Profile Picture">
+                        </div>
+                        <input type="file" id="uploadProfile" accept="image/*" hidden>
+                        <button type="button" class="btn-upload"
+                            onclick="document.getElementById('uploadProfile').click()">
+                            Change Picture
+                        </button>
+
+                        <h3 class="role" id="profileRole">Super Admin</h3>
+                    </div>
+
+                    <div class="profile-details">
+                        <div class="details-header">
+                            <h2>Personal Info</h2>
+                            <button class="btn-edit" onclick="openEditProfileModal()">Edit Profile</button>
+                        </div>
+                        <p><strong>Name:</strong> <span id="adminName"></span></p>
+                        <p><strong>Age:</strong> <span id="adminAge"></span></p>
+                        <p><strong>Birthday:</strong> <span id="adminBirthday"></span></p>
+                        <p><strong>Email:</strong> <span id="adminEmail"></span></p>
+                        <p><strong>Contact:</strong> <span id="adminContact"></span></p>
+                        <p><strong>Address:</strong> <span id="adminAddress"></span></p>
+                        <p><strong>Years of Service:</strong> <span id="adminYears"></span></p>
+                    </div>
+                </div>
+
+                <div class="certifications-section">
+                    <div class="cert-header">
+                        <h2>Certifications & Achievements</h2>
+                        <button class="btn-add-cert" onclick="openAddCertModal()">+ Add Certification</button>
+                    </div>
+                    <div id="adminCertifications" class="cert-grid"></div>
+                </div>
+            </section>
+
+            <section id="workers" class="section">
+                <h1>Barangay Health Worker's</h1>
+
+                <div class="top-actions">
+                    <div>
+                        <button onclick="addBhw()">+ Add New BHW</button>
+                        <button onclick="exportBhw()">Export</button>
+                        <input type="file" id="importFile" accept=".json,.xlsx" hidden onchange="importBhw(event)">
+                        <button onclick="document.getElementById('importFile').click()">Import</button>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <input type="text" id="workerSearch" placeholder="Search BHW Workers">
+
+                     
+                        <div class="view-menu-container">
+                            <button class="menu-btn">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+
+                            <div id="bhwViewDropdown" class="view-dropdown hidden">
+                                <button class="dropdown-item" onclick="switchBhwView('grid')">
+                                    <i class="fas fa-th"></i>
+                                    <span>Grid View</span>
+                                </button>
+                                <button class="dropdown-item" onclick="switchBhwView('list')">
+                                    <i class="fas fa-list"></i>
+                                    <span>List View</span>
+                                </button>
+                                <button class="dropdown-item" onclick="switchBhwView('table')">
+                                    <i class="fas fa-table"></i>
+                                    <span>Table View</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination Controls -->
+                <div class="bhw-pagination-controls">
+                    <div class="pagination-info">
+                        <label>Items per page:</label>
+                        <select id="bhwItemsPerPage" onchange="changeBhwItemsPerPage(this.value)">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+
+                    <div class="pagination-buttons">
+                        <button class="pagination-btn" onclick="bhwPreviousPage()" id="bhwPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                        <span id="bhwPageInfo" class="page-info">Page 1 of 1</span>
+                        <button class="pagination-btn" onclick="bhwNextPage()" id="bhwNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div id="bhwList" class="workers-grid"></div>
+            </section>
+
+            <section id="status" class="section">
+                <h1>Health Status Overview</h1>
+                <div class="status-chart-row">
+                    <div class="status-card">
+                        <canvas id="barChartStatus"></canvas>
+                    </div>
+                    <div class="status-card">
+                        <canvas id="areaChartStatus"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span id="modalClose" class="close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <div id="addCertModal" class="modal">
+        <div class="modal-content" style="width: 600px;">
+            <span class="close" onclick="closeAddCertModal()">&times;</span>
+
+            <h2
+                style="color: white; font-size: 22px; margin-bottom: 25px; background: linear-gradient(135deg, #0066cc 0%, #00b894 100%); padding: 20px; margin: -24px -24px 25px -24px; border-radius: 8px 8px 0 0;">
+                <i class="fa-solid fa-certificate"></i> Add Certification / Achievement
+            </h2>
+            <form id="certForm">
+                <div class="form-group">
+                    <label>Title:</label>
+                    <input type="text" id="certTitle" placeholder="e.g., First Aid Certification" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Issuing Organization:</label>
+                    <input type="text" id="certOrganization" placeholder="e.g., Philippine Red Cross" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Date Received:</label>
+                    <input type="date" id="certDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Description (Optional):</label>
+                    <textarea id="certDescription" placeholder="Add any additional details..." rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Certificate Link:</label>
+                    <input type="url" id="certLink" placeholder="e.g., https://example.com/certificate">
+                </div>
+
+                <div class="form-group">
+                    <label>Upload Document:</label>
+                    <div class="document-upload-wrapper">
+                        <input type="file" id="certDocument" accept=".pdf,.doc,.docx,.xlsx,.xls,.ppt,.pptx"
+                            onchange="previewCertDocument()" style="display: none;">
+                        <div id="certDocumentPreview" class="document-preview-placeholder">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <p>Click to upload document</p>
+                            <small>Supported: PDF, Word, Excel, PowerPoint</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="submit" class="save-btn" style="flex: 1;">
+                        <i class="fa-solid fa-check"></i> Add Certification
+                    </button>
+                    <button type="button" class="cancel-btn" onclick="closeAddCertModal()" style="flex: 1;">
+                        <i class="fa-solid fa-times"></i> Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

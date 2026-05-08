@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BHW Tracker - Barangay Health Worker Management System</title>
+  <link rel="stylesheet" href="css/frontpage.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <i class="fas fa-heartbeat"></i>
+        <span>BHW Tracker</span>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="#home" class="nav-link active">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#features" class="nav-link">Features</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+      <button class="nav-cta" onclick="transitionToLogin()">Get Started</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section id="home" class="hero">
+    <div class="hero-content">
+      <h1>Barangay Health Worker Management System</h1>
+      <p>Streamline healthcare worker management, track certifications, and manage community health initiatives with ease.</p>
+  
+    
+    </div>
+    <div class="hero-visual">
+      <div class="hero-graphic">
+        <i class="fas fa-users"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT SECTION -->
+  <section id="about" class="about">
+    <div class="about-header">
+      <h2>About BHW Tracker</h2>
+      <p>Empowering barangay health initiatives through modern management</p>
+    </div>
+    <div class="about-content">
+      <div class="about-card">
+        <div class="card-icon">
+          <i class="fas fa-hospital-user"></i>
+        </div>
+        <h3>What We Do</h3>
+        <p>BHW Tracker is a comprehensive platform designed to manage Barangay Health Workers, streamline certification tracking, and facilitate seamless communication between administrators and health workers in your barangay.</p>
+      </div>
+      <div class="about-card">
+        <div class="card-icon">
+          <i class="fas fa-bullseye"></i>
+        </div>
+        <h3>Our Mission</h3>
+        <p>To enhance the efficiency and effectiveness of barangay health services by providing administrators and health workers with an intuitive, reliable platform for managing resources, tracking credentials, and coordinating community health activities.</p>
+      </div>
+      <div class="about-card">
+        <div class="card-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <h3>Why Choose Us</h3>
+        <p>With a user-friendly interface, robust security, real-time data management, and comprehensive reporting capabilities, BHW Tracker makes healthcare worker management simple, efficient, and accessible.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section id="features" class="features">
+    <div class="features-header">
+      <h2>Key Features</h2>
+      <p>Everything you need to manage barangay health workers effectively</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <i class="fas fa-id-card"></i>
+        </div>
+        <h3>Certification Management</h3>
+        <p>Track and manage BHW certifications with document uploads, and status tracking for all health workers.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <i class="fas fa-chart-bar"></i>
+        </div>
+        <h3>Analytics Dashboard</h3>
+        <p>View comprehensive dashboards with real-time statistics, charts, and insights into health worker performance and certifications.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Role Based Access</h3>
+        <p>Secure admin and BHW portals with role based permissions ensuring data privacy and controlled access to sensitive information.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+          <i class="fas fa-envelope"></i>
+        </div>
+        <h3>Email Management</h3>
+        <p>Easily manage and communicate with BHWs through integrated email system with approval status tracking and notifications.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+          <i class="fas fa-file-export"></i>
+        </div>
+        <h3>Data Import & Export</h3>
+        <p>Import and Export the BHW and RESIDENT data to Excel spreadsheets with filtered results, enabling easy reporting and data analysis for administrators.</p>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3>Responsive Design</h3>
+        <p>Access BHW Tracker on any device - desktop, tablet, or mobile - with a fully responsive and intuitive interface.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS SECTION -->
+  <section class="how-it-works">
+    <div class="how-header">
+      <h2>How It Works</h2>
+      <p>Simple three-step process to get started</p>
+    </div>
+    <div class="steps-container">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Register</h3>
+        <p>Create an account as an Administrator or Barangay Health Worker with your email and credentials.</p>
+      </div>
+      <div class="step-arrow">
+        <i class="fas fa-arrow-right"></i>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Setup & Manage</h3>
+        <p>Administrators can manage BHW profiles, approve certifications, and track compliance. BHWs can submit and view their certifications.</p>
+      </div>
+      <div class="step-arrow">
+        <i class="fas fa-arrow-right"></i>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Track & Report</h3>
+        <p>Monitor health worker status, generate reports, export data, and ensure all certifications are up-to-date and compliant.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section id="contact" class="contact">
+    <div class="contact-container">
+      <div class="contact-content">
+        <h2>Get In Touch</h2>
+        <p>Have questions or need assistance? We're here to help!</p>
+        <div class="contact-info">
+          <div class="info-item">
+            <i class="fas fa-envelope"></i>
+            <div>
+              <h4>Email</h4>
+              <p>ilanolawrence04@gmail.com</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-phone"></i>
+            <div>
+              <h4>Phone</h4>
+              <p>+63 991-555-9140</p>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div>
+              <h4>Address</h4>
+              <p>Barangay San Francisco, General Trias Cavite</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </section>
+
+  <!-- AUTH MODALS -->
+  <div id="authModal" class="auth-modal">
+    <div class="auth-modal-content">
+      <!-- Left Panel - Info -->
+      <div class="auth-info-panel">
+        <div class="auth-info-content">
+          
+          <h2><i class="fas fa-heartbeat"></i>BHW Tracker</h2>
+          <p>Streamline healthcare worker management</p>
+          <div class="auth-info-features">
+            <div class="feature">
+              <i class="fas fa-check-circle"></i>
+              <span>Secure Portal Access</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-check-circle"></i>
+              <span>Real-time Analytics</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-check-circle"></i>
+              <span>Records Efficiency</span>
+            </div>
+            <div class="feature">
+              <i class="fas fa-check-circle"></i>
+              <span>Easy Management</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Forms -->
+      <div class="auth-form-panel">
+        <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+        
+        <!-- Sign In Form -->
+        <form id="signInForm" class="auth-form active" onsubmit="handleSignIn(event)">
+          <h3>Welcome Back</h3>
+          <p>Sign in to your account</p>
+          <div class="form-group">
+            <label for="signInEmail">Email</label>
+            <input type="email" id="signInEmail" placeholder="your@email.com" required>
+          </div>
+          <div class="form-group">
+            <label for="signInPassword">Password</label>
+           <div class="password-wrapper">
+  <input type="password" id="signInPassword" placeholder="••••••••" required>
+  <i class="fa-solid fa-eye toggle-eye" onclick="togglePassword('signInPassword', this)"></i>
+</div>
+
+          </div>
+          <div class="form-remember">
+    <div>
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe">Remember me</label>
+    </div>
+
+    <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">
+        Forgot Password?
+    </a>
+</div>
+
+          <button type="submit" class="btn-submit">Sign In</button>
+        </form>
+
+
+      </div>
+    </div>
+  </div>
+
+  <!-- PASSWORD RESET MODAL -->
+  <div id="resetModal" class="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="max-width: 500px; width: 95%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+      <div style="padding: 0;">
+        <!-- Close Button -->
+        <button onclick="closeResetModal()" style="position: absolute; top: 20px; right: 20px; background: #f5f5f5; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 24px; color: #999; z-index: 10; display: flex; align-items: center; justify-content: center;">&times;</button>
+
+        <!-- Header Section -->
+        <div style="background:linear-gradient(135deg, #0066cc 0%, #00b894 100%); padding: 40px 30px; text-align: center; color: white;">
+          <h3 style="font-size: 28px; margin: 0 0 10px 0; font-weight: 700;">🔑 Reset Password</h3>
+          <p style="font-size: 14px; margin: 0; opacity: 0.9;">Enter your verification code and new password</p>
+        </div>
+
+        <!-- Form Section -->
+        <form id="resetForm" onsubmit="handleResetPassword(event)" style="padding: 30px;">
+          <!-- Hidden email input -->
+          <input type="hidden" id="resetEmail">
+          
+          <!-- Reset Code Input -->
+          <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #333; font-size: 14px;">📧 Verification Code</label>
+            <input type="text" id="resetCode" placeholder="Enter 6-digit code from your email" required style="width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; box-sizing: border-box; transition: border-color 0.3s;" onFocus="this.style.borderColor='#2196F3'" onBlur="this.style.borderColor='#e0e0e0'">
+            <small style="color: #999; display: block; margin-top: 6px; font-size: 12px;">Check your email inbox for the 6-digit code</small>
+          </div>
+
+          <!-- Divider -->
+          <div style="border-top: 1px solid #e0e0e0; margin: 30px 0;"></div>
+
+          <!-- New Password Input -->
+          <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #333; font-size: 14px;">🔑 New Password</label>
+            <div style="position: relative;">
+              <input type="password" id="newPassword" placeholder="Enter new password" required style="width: 100%; padding: 14px 45px 14px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; box-sizing: border-box; transition: border-color 0.3s;" onFocus="this.style.borderColor='#2196F3'" onBlur="this.style.borderColor='#e0e0e0'">
+              <i class="fa-solid fa-eye" id="toggleNewPwd" onclick="toggleResetPassword('newPassword', this)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; transition: color 0.3s;"></i>
+            </div>
+            <small style="color: #ff6b6b; display: block; margin-top: 6px; font-size: 12px;">⚠️ Minimum 6 characters required</small>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <div style="margin-bottom: 30px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #333; font-size: 14px;">✓ Confirm Password</label>
+            <div style="position: relative;">
+              <input type="password" id="confirmPassword" placeholder="Re-enter your password" required style="width: 100%; padding: 14px 45px 14px 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; box-sizing: border-box; transition: border-color 0.3s;" onFocus="this.style.borderColor='#2196F3'" onBlur="this.style.borderColor='#e0e0e0'">
+              <i class="fa-solid fa-eye" id="toggleConfirmPwd" onclick="toggleResetPassword('confirmPassword', this)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #999; transition: color 0.3s;"></i>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div style="display: flex; gap: 12px;">
+            <button type="submit" style="flex: 1; padding: 14px; background: linear-gradient(135deg, #0066cc 0%, #00b894 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 16px; transition: transform 0.2s, box-shadow 0.2s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(33, 150, 243, 0.4)'" onMouseOut="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Reset Password</button>
+            <button type="button" onclick="closeResetModal()" style="flex: 1; padding: 14px; background: #f5f5f5; color: #333; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 16px; transition: background 0.2s;" onMouseOver="this.style.background='#efefef'" onMouseOut="this.style.background='#f5f5f5'">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>BHW Tracker</h3>
+        <p>Managing barangay health workers with efficiency and transparency.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#">Admin Portal</a></li>
+          <li><a href="#">BHW Portal</a></li>
+          <li><a href="#">Support</a></li>
+          <li><a href="#">Documentation</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 BHW Tracker. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+      // Smooth scrolling for navigation links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+          // Update active nav link
+          document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+          });
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('.navbar');
+      if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // Contact form submission
+    document.querySelector('.contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert('Thank you for your message! We will get back to you soon.');
+      this.reset();
+    });
+
+    // Update active nav link on scroll
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('section[id]');
+      const navLinks = document.querySelectorAll('.nav-link');
+      
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        const sectionBottom = sectionTop + section.offsetHeight;
+        
+        if (window.scrollY >= sectionTop && window.scrollY < sectionBottom) {
+          navLinks.forEach(link => link.classList.remove('active'));
+          const activeLink = document.querySelector(`.nav-link[href="#${section.id}"]`);
+          if (activeLink) activeLink.classList.add('active');
+        }
+      });
+    });
+
+    // Open auth modal
+    function openAuthModal() {
+      const modal = document.getElementById('authModal');
+      modal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close auth modal
+    function closeAuthModal() {
+      const modal = document.getElementById('authModal');
+      modal.classList.remove('show');
+      document.body.style.overflow = 'auto';
+    }
+
+    // Toggle between sign in and sign up
+    function toggleAuthForm(e) {
+      e.preventDefault();
+      // Sign up form is disabled, only sign in available
+      return false;
+    }
+
+    // Transition to login page with fade effect
+    function transitionToLogin() {
+      // Ensure Sign In form is active when opening modal
+      const signInForm = document.getElementById('signInForm');
+      
+      if (signInForm && !signInForm.classList.contains('active')) {
+        signInForm.classList.add('active');
+      }
+      
+      openAuthModal();
+    }
+
+    //  SIGN IN HANDLER - Verify Email, Send Code, Then Verify Code
+    async function handleSignIn(e) {
+      e.preventDefault();
+      const email = document.getElementById('signInEmail').value.trim();
+      const password = document.getElementById('signInPassword').value.trim();
+      const rememberMe = document.getElementById('rememberMe').checked;
+
+      if (!email || !password) {
+        alert('❌ Please enter both email and password');
+        return;
+      }
+
+      try {
+        //  STEP 1: Verify Email is Legitimate
+        const verifyRes = await fetch('http://localhost:5236/api/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        const verifyData = await verifyRes.json();
+
+        if (!verifyData.isValid) {
+          alert('⚠️ ' + verifyData.message);
+          return;
+        }
+
+        //  STEP 2: Send Verification Code
+        const sendCodeRes = await fetch('http://localhost:5236/api/auth/send-login-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const codeData = await sendCodeRes.json();
+
+        if (!sendCodeRes.ok) {
+          alert('❌ ' + (codeData.message || 'Login failed'));
+          return;
+        }
+
+        // ⏳ Show loading message while email sends
+        alert('⏳ Sending verification code to your email...\nPlease wait...');
+
+        //  STEP 3: Show Code Input Dialog
+        const verificationCode = prompt('📧 Verification code sent to your email!\n\nPlease enter the 6-digit code:');
+
+        if (!verificationCode) {
+          alert('❌ Verification cancelled');
+          return;
+        }
+
+        //  STEP 4: Verify the Code
+        const verifyCodeRes = await fetch('http://localhost:5236/api/auth/verify-login-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code: verificationCode })
+        });
+
+        const loginData = await verifyCodeRes.json();
+
+        if (!verifyCodeRes.ok) {
+          alert('❌ ' + (loginData.message || 'Invalid verification code'));
+          return;
+        }
+
+        //  Login successful
+        if (loginData.role === 'Admin') {
+          alert(` Email Verified! Welcome Admin ${loginData.firstname}!`);
+          localStorage.setItem('userRole', 'Admin');
+          localStorage.setItem('userEmail', loginData.email);
+          localStorage.setItem('userFirstname', loginData.firstname);
+          localStorage.setItem('adminId', loginData.adminId || '');
+          
+          if (rememberMe) {
+            localStorage.setItem('rememberMe', 'true');
+          }
+
+          setTimeout(() => {
+            window.location.href = 'admin.html';
+          }, 500);
+        } else if (loginData.role === 'BHW') {
+          alert(`✅ Email Verified! Welcome BHW ${loginData.firstname}!`);
+          localStorage.setItem('userRole', 'BHW');
+          localStorage.setItem('userEmail', loginData.email);
+          localStorage.setItem('userFirstname', loginData.firstname);
+          localStorage.setItem('firstname', loginData.firstname);
+          localStorage.setItem('bhwId', loginData.bhwId || '');
+          localStorage.setItem('status', loginData.status);
+          
+          if (rememberMe) {
+            localStorage.setItem('rememberMe', 'true');
+          }
+
+          setTimeout(() => {
+            window.location.href = 'bhw.html';
+          }, 500);
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        alert('⚠️ Cannot connect to server. Please check if the server is running.');
+      }
+    }
+
+    //  FORGOT PASSWORD HANDLER
+    async function handleForgotPassword(event) {
+      event.preventDefault();
+
+      const email = document.getElementById('signInEmail').value.trim();
+
+      if (!email) {
+        alert('Please enter your email address first.');
+        return;
+      }
+
+      try {
+        // Step 1: Request password reset
+        const response = await fetch('http://localhost:5236/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            alert('❌ No account found with this email address.');
+          } else if (response.status === 400) {
+            alert('❌ Email is required.');
+          } else {
+            alert('❌ Server error. Please try again later.');
+          }
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.found) {
+          alert(`✅ ${data.message}`);
+          
+          // Store email in hidden field for reset form
+          document.getElementById('resetEmail').value = email;
+          
+          // Close auth modal and open reset modal
+          closeAuthModal();
+          openResetModal();
+        } else {
+          alert('❌ Email not found');
+        }
+      } catch (error) {
+        alert('❌ ' + error.message);
+      }
+    }
+
+    // Open reset modal
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.style.display = 'flex';
+    }
+
+    // Close reset modal
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.style.display = 'none';
+      document.getElementById('resetForm').reset();
+    }
+
+    // Toggle password visibility for reset form
+    function toggleResetPassword(inputId, icon) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // Handle reset password form submission
+    async function handleResetPassword(event) {
+      event.preventDefault();
+
+      const resetCode = document.getElementById('resetCode').value.trim();
+      const newPassword = document.getElementById('newPassword').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const email = document.getElementById('resetEmail').value.trim();
+
+      if (!resetCode || !newPassword || !confirmPassword) {
+        alert('❌ Please fill in all fields');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        alert('❌ Password must be at least 6 characters long');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        alert('❌ Passwords do not match!');
+        return;
+      }
+
+      try {
+        // Reset the password
+        const resetRes = await fetch('http://localhost:5236/api/auth/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, newPassword })
+        });
+
+        const resetData = await resetRes.json();
+
+        if (resetRes.ok) {
+          alert(`✅ ${resetData.message}\n\nYou can now login with your new password.`);
+          closeResetModal();
+          document.getElementById('signInEmail').value = '';
+          document.getElementById('signInPassword').value = '';
+        } else {
+          alert('❌ ' + (resetData.message || 'Password reset failed'));
+        }
+      } catch (error) {
+        alert('❌ ' + error.message);
+      }
+    }
+
+    // ✅ SIGN UP HANDLER - DISABLED
+    // Sign up functionality has been removed
+
+    // PASSWORD CONFIRMATION CHECK - DISABLED
+    // Sign up form removed, no longer needed
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function(e) {
+      const modal = document.getElementById('authModal');
+      if (e.target === modal) {
+        closeAuthModal();
+      }
+    });
+
+    function togglePassword(inputId, icon) {
+  const field = document.getElementById(inputId);
+
+  if (field.type === "password") {
+    field.type = "text";
+    icon.classList.remove("fa-eye");
+    icon.classList.add("fa-eye-slash");
+  } else {
+    field.type = "password";
+    icon.classList.remove("fa-eye-slash");
+    icon.classList.add("fa-eye");
+  }
+}
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Viewer - BHW Tracker</title>
+    <link rel="stylesheet" href="css/emails.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1><i class="fas fa-envelope"></i> Email Management</h1>
+            <button class="btn-back" onclick="goBack()"><i class="fas fa-arrow-left"></i> Back</button>
+        </div>
+
+        <div class="email-content">
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('all')">All Users</button>
+                    <button class="tab-btn" onclick="switchTab('bhw')">BHW Accounts</button>
+                    <button class="tab-btn" onclick="switchTab('admin')">Admin Accounts</button>
+                </div>
+                <div class="admin-search">
+                    <input type="text" id="currentSearch" placeholder="Search..." onkeyup="filterCurrentTab()">
+                </div>
+            </div>
+
+            <!-- All Users Tab -->
+            <div id="all" class="tab-content active">
+                    <div class="email-pagination-controls">
+                        <label>Items per page:</label>
+                        <select onchange="changeEmailItemsPerPage('all', this.value)">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                        <div class="pagination-buttons">
+                            <button onclick="emailPreviousPage('all')" id="allPrevBtn" class="pagination-btn"><i class="fas fa-chevron-left"></i> Prev</button>
+                            <span id="allPageInfo" class="page-info">Page 1 of 1</span>
+                            <button onclick="emailNextPage('all')" id="allNextBtn" class = "pagination-btn">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="email-list">
+                        <div class="email-header-row">
+                            <div class="col-name">Full Name</div>
+                            <div class="col-email">Email Address</div>
+                            <div class="col-role">Role</div>
+                            <div class="col-status">Status</div>
+                            <div class="col-action">Action</div>
+                        </div>
+                        <div id="allUsers"></div>
+                    </div>
+                </div>
+
+                <!-- BHW Tab -->
+                <div id="bhw" class="tab-content">
+                    <div class="status-sections">
+                        <!-- Approved BHW -->
+                        <div class="status-section approved-section">
+                            <div class="status-section-header approved-header">
+                                <h3><i class="fas fa-check-circle"></i> Approved</h3>
+                                <span class="count" id="bhwApprovedCount">0</span>
+                            </div>
+                            <div class="email-pagination-controls">
+                                <label>Items per page:</label>
+                                <select onchange="changeEmailItemsPerPage('bhwApproved', this.value)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <div class="pagination-buttons">
+                                    <button onclick="emailPreviousPage('bhwApproved')" id="bhwApprovedPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <span id="bhwApprovedPageInfo" class="page-info">Page 1 of 1</span>
+                                    <button onclick="emailNextPage('bhwApproved')" id="bhwApprovedNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="email-list">
+                                <div class="email-header-row">
+                                    <div class="col-name">Full Name</div>
+                                    <div class="col-email">Email Address</div>
+                                    <div class="col-action">Action</div>
+                                </div>
+                                <div id="bhwApprovedEmails"></div>
+                            </div>
+                        </div>
+
+                        <!-- Pending BHW -->
+                        <div class="status-section pending-section">
+                            <div class="status-section-header pending-header">
+                                <h3><i class="fas fa-hourglass-half"></i> Pending</h3>
+                                <span class="count" id="bhwPendingCount">0</span>
+                            </div>
+                            <div class="email-pagination-controls">
+                                <label>Items per page:</label>
+                                <select onchange="changeEmailItemsPerPage('bhwPending', this.value)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <div class="pagination-buttons">
+                                    <button onclick="emailPreviousPage('bhwPending')" id="bhwPendingPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <span id="bhwPendingPageInfo" class="page-info">Page 1 of 1</span>
+                                    <button onclick="emailNextPage('bhwPending')" id="bhwPendingNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="email-list">
+                                <div class="email-header-row">
+                                    <div class="col-name">Full Name</div>
+                                    <div class="col-email">Email Address</div>
+                                    <div class="col-action">Action</div>
+                                </div>
+                                <div id="bhwPendingEmails"></div>
+                            </div>
+                        </div>
+
+                        <!-- Rejected BHW -->
+                        <div class="status-section rejected-section">
+                            <div class="status-section-header rejected-header">
+                                <h3><i class="fas fa-times-circle"></i> Rejected</h3>
+                                <span class="count" id="bhwRejectedCount">0</span>
+                            </div>
+                            <div class="email-pagination-controls">
+                                <label>Items per page:</label>
+                                <select onchange="changeEmailItemsPerPage('bhwRejected', this.value)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <div class="pagination-buttons">
+                                    <button onclick="emailPreviousPage('bhwRejected')" id="bhwRejectedPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <span id="bhwRejectedPageInfo" class="page-info">Page 1 of 1</span>
+                                    <button onclick="emailNextPage('bhwRejected')" id="bhwRejectedNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="email-list">
+                                <div class="email-header-row">
+                                    <div class="col-name">Full Name</div>
+                                    <div class="col-email">Email Address</div>
+                                    <div class="col-action">Action</div>
+                                </div>
+                                <div id="bhwRejectedEmails"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Tab -->
+                <div id="admin" class="tab-content">
+                    <div class="email-pagination-controls">
+                        <label>Items per page:</label>
+                        <select onchange="changeEmailItemsPerPage('admin', this.value)">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="15">15</option>
+                            <option value="20">20</option>
+                        </select>
+                        <div class="pagination-buttons">
+                            <button onclick="emailPreviousPage('admin')" id="adminPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                            <span id="adminPageInfo" class="page-info">Page 1 of 1</span>
+                            <button onclick="emailNextPage('admin')" id="adminNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    <div class="email-list">
+                        <div class="email-header-row">
+                            <div class="col-name">Full Name</div>
+                            <div class="col-email">Email Address</div>
+                            <div class="col-action">Action</div>
+                        </div>
+                        <div id="adminUsers"></div>
+                    </div>
+                </div>
+
+                <!-- Status Tab -->
+                <div id="status" class="tab-content">
+                    <div class="status-sections">
+                        <!-- Approved -->
+                        <div class="status-section approved-section">
+                            <div class="status-section-header approved-header">
+                                <h3><i class="fas fa-check-circle"></i> Approved</h3>
+                                <span class="count" id="approvedCount">0</span>
+                            </div>
+                            <div class="email-pagination-controls">
+                                <label>Items per page:</label>
+                                <select onchange="changeEmailItemsPerPage('statusApproved', this.value)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <div class="pagination-buttons">
+                                    <button onclick="emailPreviousPage('statusApproved')" id="statusApprovedPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <span id="statusApprovedPageInfo" class="page-info">Page 1 of 1</span>
+                                    <button onclick="emailNextPage('statusApproved')" id="statusApprovedNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="email-list">
+                                <div class="email-header-row">
+                                    <div class="col-name">Full Name</div>
+                                    <div class="col-email">Email Address</div>
+                                    <div class="col-role">Role</div>
+                                    <div class="col-action">Action</div>
+                                </div>
+                                <div id="approvedEmails"></div>
+                            </div>
+                        </div>
+
+                        <!-- Pending -->
+                        <div class="status-section pending-section">
+                            <div class="status-section-header pending-header">
+                                <h3><i class="fas fa-hourglass-half"></i> Pending</h3>
+                                <span class="count" id="pendingCount">0</span>
+                            </div>
+                            <div class="email-pagination-controls">
+                                <label>Items per page:</label>
+                                <select onchange="changeEmailItemsPerPage('statusPending', this.value)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <div class="pagination-buttons">
+                                    <button onclick="emailPreviousPage('statusPending')" id="statusPendingPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <span id="statusPendingPageInfo" class="page-info">Page 1 of 1</span>
+                                    <button onclick="emailNextPage('statusPending')" id="statusPendingNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="email-list">
+                                <div class="email-header-row">
+                                    <div class="col-name">Full Name</div>
+                                    <div class="col-email">Email Address</div>
+                                    <div class="col-role">Role</div>
+                                    <div class="col-action">Action</div>
+                                </div>
+                                <div id="pendingEmails"></div>
+                            </div>
+                        </div>
+
+                        <!-- Rejected -->
+                        <div class="status-section rejected-section">
+                            <div class="status-section-header rejected-header">
+                                <h3><i class="fas fa-times-circle"></i> Rejected</h3>
+                                <span class="count" id="rejectedCount">0</span>
+                            </div>
+                            <div class="email-pagination-controls">
+                                <label>Items per page:</label>
+                                <select onchange="changeEmailItemsPerPage('statusRejected', this.value)">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select>
+                                <div class="pagination-buttons">
+                                    <button onclick="emailPreviousPage('statusRejected')" id="statusRejectedPrevBtn"><i class="fas fa-chevron-left"></i> Prev</button>
+                                    <span id="statusRejectedPageInfo" class="page-info">Page 1 of 1</span>
+                                    <button onclick="emailNextPage('statusRejected')" id="statusRejectedNextBtn">Next <i class="fas fa-chevron-right"></i></button>
+                                </div>
+                            </div>
+                            <div class="email-list">
+                                <div class="email-header-row">
+                                    <div class="col-name">Full Name</div>
+                                    <div class="col-email">Email Address</div>
+                                    <div class="col-role">Role</div>
+                                    <div class="col-action">Action</div>
+                                </div>
+                                <div id="rejectedEmails"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let allEmails = [];
+            let currentTab = 'all';
+
+            // ===== PAGINATION STATE =====
+            let emailPaginationState = {
+                'all': { page: 1, itemsPerPage: 10 },
+                'admin': { page: 1, itemsPerPage: 10 },
+                'bhwApproved': { page: 1, itemsPerPage: 10 },
+                'bhwPending': { page: 1, itemsPerPage: 10 },
+                'bhwRejected': { page: 1, itemsPerPage: 10 },
+                'statusApproved': { page: 1, itemsPerPage: 10 },
+                'statusPending': { page: 1, itemsPerPage: 10 },
+                'statusRejected': { page: 1, itemsPerPage: 10 }
+            };
+
+            // Load emails on page load
+            window.addEventListener('load', loadAllEmails);
+
+            // Load all emails from API
+            async function loadAllEmails() {
+                try {
+                    console.log("🌐 Fetching emails from: http://localhost:5236/api/auth/all-emails");
+
+                    const response = await fetch("http://localhost:5236/api/auth/all-emails");
+
+                    console.log("📊 Response status:", response.status);
+                    console.log("📊 Response ok:", response.ok);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log("✅ Data received:", data);
+
+                    allEmails = data;
+                    displayEmails();
+                } catch (err) {
+                    console.error("❌ Error loading emails:", err);
+                    console.error("Error details:", err.message);
+                    alert("Failed to load emails. Please check your connection.\n\nMake sure:\n1. Backend is running (dotnet run)\n2. Check browser console (F12) for details");
+                }
+            }
+
+            // Display emails based on current tab
+            function displayEmails() {
+                displayAllUsers();
+                displayBHWUsers();
+                displayAdminUsers();
+                displayStatusEmails();
+                
+                // Update pagination UI for all tabs
+                updateEmailPaginationUI('all');
+                updateEmailPaginationUI('bhwApproved');
+                updateEmailPaginationUI('bhwPending');
+                updateEmailPaginationUI('bhwRejected');
+                updateEmailPaginationUI('admin');
+                updateEmailPaginationUI('statusApproved');
+                updateEmailPaginationUI('statusPending');
+                updateEmailPaginationUI('statusRejected');
+            }
+
+            // Display all users
+            function displayAllUsers() {
+                const paginatedData = getPaginatedEmailData('all');
+                displayAllUsersList(paginatedData);
+            }
+
+            // Display all users (old implementation kept for reference, replaced by displayAllUsersList)
+            function displayAllUsersOld() {
+                const container = document.getElementById('allUsers');
+                const all = [...(allEmails.bhws || []), ...(allEmails.admins || [])];
+
+                if (all.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+
+                container.innerHTML = all.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-role">
+                        <span class="badge badge-${user.role.toLowerCase()}">${user.role}</span>
+                    </div>
+                    <div class="col-status">
+                        <span class="status status-${user.status.toLowerCase().replace(/\s/g, '-')}">${user.status}</span>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            // Filter current tab based on active tab
+            function filterCurrentTab() {
+                const searchTerm = document.getElementById('currentSearch').value.toLowerCase();
+                
+                if (currentTab === 'all') {
+                    filterAllUsers(searchTerm);
+                } else if (currentTab === 'bhw') {
+                    filterBHWEmails(searchTerm);
+                } else if (currentTab === 'admin') {
+                    filterAdminUsers(searchTerm);
+                } else if (currentTab === 'status') {
+                    filterStatusEmails(searchTerm);
+                }
+            }
+
+            // Filter all users by search
+            function filterAllUsers(searchTerm = '') {
+                if (!searchTerm) {
+                    searchTerm = document.getElementById('currentSearch').value.toLowerCase();
+                }
+                
+                const all = [...(allEmails.bhws || []), ...(allEmails.admins || [])];
+
+                const filtered = all.filter(user =>
+                    user.firstname.toLowerCase().includes(searchTerm) ||
+                    user.surname.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+
+                const container = document.getElementById('allUsers');
+
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+
+                container.innerHTML = filtered.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-role">
+                        <span class="badge badge-${user.role.toLowerCase()}">${user.role}</span>
+                    </div>
+                    <div class="col-status">
+                        <span class="status status-${user.status.toLowerCase().replace(/\s/g, '-')}">${user.status}</span>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            // Display BHW users by status
+            function displayBHWUsers() {
+                const bhws = allEmails.bhws || [];
+                
+                const approved = bhws.filter(u => u.status.toLowerCase() === 'approved');
+                const pending = bhws.filter(u => u.status.toLowerCase() === 'pending');
+                const rejected = bhws.filter(u => u.status.toLowerCase() === 'rejected');
+
+                document.getElementById('bhwApprovedCount').textContent = approved.length;
+                document.getElementById('bhwPendingCount').textContent = pending.length;
+                document.getElementById('bhwRejectedCount').textContent = rejected.length;
+
+                // Display paginated data
+                displayBHWUsersList('bhwApproved', getPaginatedEmailData('bhwApproved'));
+                displayBHWUsersList('bhwPending', getPaginatedEmailData('bhwPending'));
+                displayBHWUsersList('bhwRejected', getPaginatedEmailData('bhwRejected'));
+            }
+
+            // Display BHW users by status (OLD - kept for reference)
+            function displayBHWUsersOld() {
+                const bhws = allEmails.bhws || [];
+                const approved = bhws.filter(u => u.status.toLowerCase() === 'approved');
+                const pending = bhws.filter(u => u.status.toLowerCase() === 'pending');
+                const rejected = bhws.filter(u => u.status.toLowerCase() === 'rejected');
+
+                document.getElementById('bhwApprovedCount').textContent = approved.length;
+                document.getElementById('bhwPendingCount').textContent = pending.length;
+                document.getElementById('bhwRejectedCount').textContent = rejected.length;
+
+                displayBHWStatusGroup('bhwApprovedEmails', approved);
+                displayBHWStatusGroup('bhwPendingEmails', pending);
+                displayBHWStatusGroup('bhwRejectedEmails', rejected);
+            }
+
+            // Display BHW status group
+            function displayBHWStatusGroup(containerId, users) {
+                const container = document.getElementById(containerId);
+
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+
+                container.innerHTML = users.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            // Filter BHW emails by search
+            function filterBHWEmails(searchTerm = '') {
+                if (!searchTerm) {
+                    searchTerm = document.getElementById('currentSearch').value.toLowerCase();
+                }
+                
+                const bhws = allEmails.bhws || [];
+
+                const approved = bhws.filter(u => u.status.toLowerCase() === 'approved' &&
+                    (u.firstname.toLowerCase().includes(searchTerm) ||
+                        u.surname.toLowerCase().includes(searchTerm) ||
+                        u.email.toLowerCase().includes(searchTerm)));
+                const pending = bhws.filter(u => u.status.toLowerCase() === 'pending' &&
+                    (u.firstname.toLowerCase().includes(searchTerm) ||
+                        u.surname.toLowerCase().includes(searchTerm) ||
+                        u.email.toLowerCase().includes(searchTerm)));
+                const rejected = bhws.filter(u => u.status.toLowerCase() === 'rejected' &&
+                    (u.firstname.toLowerCase().includes(searchTerm) ||
+                        u.surname.toLowerCase().includes(searchTerm) ||
+                        u.email.toLowerCase().includes(searchTerm)));
+
+                displayBHWStatusGroup('bhwApprovedEmails', approved);
+                displayBHWStatusGroup('bhwPendingEmails', pending);
+                displayBHWStatusGroup('bhwRejectedEmails', rejected);
+            }
+
+            // Display Admin users
+            function displayAdminUsers() {
+                const admins = allEmails.admins || [];
+                const paginatedData = getPaginatedEmailData('admin');
+                displayAdminUsersList(paginatedData);
+            }
+
+            // Display Admin users (OLD - kept for reference)
+            function displayAdminUsersOld() {
+                const container = document.getElementById('adminUsers');
+                const admins = allEmails.admins || [];
+
+                if (admins.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No admin accounts found</div>';
+                    return;
+                }
+
+                container.innerHTML = admins.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            // Filter Admin users by search
+            function filterAdminUsers(searchTerm = '') {
+                if (!searchTerm) {
+                    searchTerm = document.getElementById('currentSearch').value.toLowerCase();
+                }
+                
+                const admins = allEmails.admins || [];
+
+                const filtered = admins.filter(user =>
+                    user.firstname.toLowerCase().includes(searchTerm) ||
+                    user.surname.toLowerCase().includes(searchTerm) ||
+                    user.email.toLowerCase().includes(searchTerm)
+                );
+
+                const container = document.getElementById('adminUsers');
+
+                if (filtered.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No admin accounts found</div>';
+                    return;
+                }
+
+                container.innerHTML = filtered.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            // Display Status tab emails
+            function displayStatusEmails() {
+                const all = [...(allEmails.bhws || []), ...(allEmails.admins || [])];
+                const approved = all.filter(u => u.status.toLowerCase() === 'approved');
+                const pending = all.filter(u => u.status.toLowerCase() === 'pending');
+                const rejected = all.filter(u => u.status.toLowerCase() === 'rejected');
+
+                document.getElementById('approvedCount').textContent = approved.length;
+                document.getElementById('pendingCount').textContent = pending.length;
+                document.getElementById('rejectedCount').textContent = rejected.length;
+
+                // Display paginated data for each status
+                displayStatusGroupPaginated('statusApproved', getPaginatedEmailData('statusApproved'));
+                displayStatusGroupPaginated('statusPending', getPaginatedEmailData('statusPending'));
+                displayStatusGroupPaginated('statusRejected', getPaginatedEmailData('statusRejected'));
+            }
+
+            // Display status group (OLD - kept for reference)
+            function displayStatusGroup(containerId, users) {
+                const container = document.getElementById(containerId);
+
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+
+                container.innerHTML = users.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-role">
+                        <span class="badge badge-${user.role.toLowerCase()}">${user.role}</span>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            }
+
+            // Filter Status emails by search
+            function filterStatusEmails(searchTerm = '') {
+                if (!searchTerm) {
+                    searchTerm = document.getElementById('currentSearch').value.toLowerCase();
+                }
+                
+                const all = [...(allEmails.bhws || []), ...(allEmails.admins || [])];
+
+                const approved = all.filter(u => u.status.toLowerCase() === 'approved' &&
+                    (u.firstname.toLowerCase().includes(searchTerm) ||
+                        u.surname.toLowerCase().includes(searchTerm) ||
+                        u.email.toLowerCase().includes(searchTerm)));
+                const pending = all.filter(u => u.status.toLowerCase() === 'pending' &&
+                    (u.firstname.toLowerCase().includes(searchTerm) ||
+                        u.surname.toLowerCase().includes(searchTerm) ||
+                        u.email.toLowerCase().includes(searchTerm)));
+                const rejected = all.filter(u => u.status.toLowerCase() === 'rejected' &&
+                    (u.firstname.toLowerCase().includes(searchTerm) ||
+                        u.surname.toLowerCase().includes(searchTerm) ||
+                        u.email.toLowerCase().includes(searchTerm)));
+
+                displayStatusGroup('approvedEmails', approved);
+                displayStatusGroup('pendingEmails', pending);
+                displayStatusGroup('rejectedEmails', rejected);
+            }
+
+            // Switch between tabs
+            function switchTab(tabName) {
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Remove active class from all buttons
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Show selected tab
+                document.getElementById(tabName).classList.add('active');
+                event.target.classList.add('active');
+                
+                // Update current tab and clear search
+                currentTab = tabName;
+                document.getElementById('currentSearch').value = '';
+            }
+
+            // Copy email to clipboard
+            function copyToClipboard(email, btn) {
+                navigator.clipboard.writeText(email).then(() => {
+                    const originalText = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    btn.style.background = '#00b894';
+
+                    setTimeout(() => {
+                        btn.innerHTML = originalText;
+                        btn.style.background = '';
+                    }, 2000);
+                });
+            }
+
+            // ===== EMAIL PAGINATION FUNCTIONS =====
+            function changeEmailItemsPerPage(tabName, value) {
+                emailPaginationState[tabName].itemsPerPage = parseInt(value);
+                emailPaginationState[tabName].page = 1;
+                updateEmailDisplay(tabName);
+                updateEmailPaginationUI(tabName);
+            }
+
+            function emailNextPage(tabName) {
+                const data = getEmailTabData(tabName);
+                const maxPage = Math.ceil(data.length / emailPaginationState[tabName].itemsPerPage);
+                if (emailPaginationState[tabName].page < maxPage) {
+                    emailPaginationState[tabName].page++;
+                    updateEmailDisplay(tabName);
+                    updateEmailPaginationUI(tabName);
+                }
+            }
+
+            function emailPreviousPage(tabName) {
+                if (emailPaginationState[tabName].page > 1) {
+                    emailPaginationState[tabName].page--;
+                    updateEmailDisplay(tabName);
+                    updateEmailPaginationUI(tabName);
+                }
+            }
+
+            function getEmailTabData(tabName) {
+                if (tabName === 'all') return [...(allEmails.bhws || []), ...(allEmails.admins || [])];
+                if (tabName === 'admin') return allEmails.admins || [];
+                if (tabName === 'bhwApproved') return (allEmails.bhws || []).filter(u => u.status.toLowerCase() === 'approved');
+                if (tabName === 'bhwPending') return (allEmails.bhws || []).filter(u => u.status.toLowerCase() === 'pending');
+                if (tabName === 'bhwRejected') return (allEmails.bhws || []).filter(u => u.status.toLowerCase() === 'rejected');
+                if (tabName === 'statusApproved') return [...(allEmails.bhws || []), ...(allEmails.admins || [])].filter(u => u.status.toLowerCase() === 'approved');
+                if (tabName === 'statusPending') return [...(allEmails.bhws || []), ...(allEmails.admins || [])].filter(u => u.status.toLowerCase() === 'pending');
+                if (tabName === 'statusRejected') return [...(allEmails.bhws || []), ...(allEmails.admins || [])].filter(u => u.status.toLowerCase() === 'rejected');
+                return [];
+            }
+
+            function getPaginatedEmailData(tabName) {
+                const data = getEmailTabData(tabName);
+                const { page, itemsPerPage } = emailPaginationState[tabName];
+                const start = (page - 1) * itemsPerPage;
+                const end = start + itemsPerPage;
+                return data.slice(start, end);
+            }
+
+            function updateEmailDisplay(tabName) {
+                if (tabName === 'all') {
+                    const paginatedData = getPaginatedEmailData('all');
+                    displayAllUsersList(paginatedData);
+                } else if (tabName === 'admin') {
+                    const paginatedData = getPaginatedEmailData('admin');
+                    displayAdminUsersList(paginatedData);
+                } else if (tabName === 'bhwApproved' || tabName === 'bhwPending' || tabName === 'bhwRejected') {
+                    const paginatedData = getPaginatedEmailData(tabName);
+                    displayBHWUsersList(tabName, paginatedData);
+                } else if (tabName === 'statusApproved' || tabName === 'statusPending' || tabName === 'statusRejected') {
+                    const paginatedData = getPaginatedEmailData(tabName);
+                    displayStatusGroupPaginated(tabName, paginatedData);
+                }
+            }
+
+            function updateEmailPaginationUI(tabName) {
+                const data = getEmailTabData(tabName);
+                const { page, itemsPerPage } = emailPaginationState[tabName];
+                const maxPage = Math.ceil(data.length / itemsPerPage);
+
+                // Determine button and info IDs based on tab name
+                let prevBtnId, nextBtnId, pageInfoId;
+                
+                if (tabName === 'all') {
+                    prevBtnId = 'allPrevBtn';
+                    nextBtnId = 'allNextBtn';
+                    pageInfoId = 'allPageInfo';
+                } else if (tabName === 'admin') {
+                    prevBtnId = 'adminPrevBtn';
+                    nextBtnId = 'adminNextBtn';
+                    pageInfoId = 'adminPageInfo';
+                } else if (tabName === 'bhwApproved') {
+                    prevBtnId = 'bhwApprovedPrevBtn';
+                    nextBtnId = 'bhwApprovedNextBtn';
+                    pageInfoId = 'bhwApprovedPageInfo';
+                } else if (tabName === 'bhwPending') {
+                    prevBtnId = 'bhwPendingPrevBtn';
+                    nextBtnId = 'bhwPendingNextBtn';
+                    pageInfoId = 'bhwPendingPageInfo';
+                } else if (tabName === 'bhwRejected') {
+                    prevBtnId = 'bhwRejectedPrevBtn';
+                    nextBtnId = 'bhwRejectedNextBtn';
+                    pageInfoId = 'bhwRejectedPageInfo';
+                } else if (tabName === 'statusApproved') {
+                    prevBtnId = 'statusApprovedPrevBtn';
+                    nextBtnId = 'statusApprovedNextBtn';
+                    pageInfoId = 'statusApprovedPageInfo';
+                } else if (tabName === 'statusPending') {
+                    prevBtnId = 'statusPendingPrevBtn';
+                    nextBtnId = 'statusPendingNextBtn';
+                    pageInfoId = 'statusPendingPageInfo';
+                } else if (tabName === 'statusRejected') {
+                    prevBtnId = 'statusRejectedPrevBtn';
+                    nextBtnId = 'statusRejectedNextBtn';
+                    pageInfoId = 'statusRejectedPageInfo';
+                }
+
+                // Update button states
+                const prevBtn = document.getElementById(prevBtnId);
+                const nextBtn = document.getElementById(nextBtnId);
+                const pageInfo = document.getElementById(pageInfoId);
+
+                if (prevBtn) prevBtn.disabled = page <= 1;
+                if (nextBtn) nextBtn.disabled = page >= maxPage;
+                if (pageInfo) pageInfo.textContent = `Page ${page} of ${maxPage}`;
+            }
+
+            function displayAllUsersList(users) {
+                const container = document.getElementById('allUsers');
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+                container.innerHTML = users.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-role">
+                        <span class="badge badge-${user.role ? user.role.toLowerCase() : 'user'}">${user.role || 'User'}</span>
+                    </div>
+                    <div class="col-status">
+                        <span class="status status-${(user.status || 'unknown').toLowerCase().replace(/\s/g, '-')}">${user.status || 'Unknown'}</span>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                `).join('');
+            }
+
+            function displayAdminUsersList(users) {
+                const container = document.getElementById('adminUsers');
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+                container.innerHTML = users.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                `).join('');
+            }
+
+            function displayBHWUsersList(tabName, users) {
+                let containerId;
+                if (tabName === 'bhwApproved') containerId = 'bhwApprovedEmails';
+                else if (tabName === 'bhwPending') containerId = 'bhwPendingEmails';
+                else if (tabName === 'bhwRejected') containerId = 'bhwRejectedEmails';
+
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    console.error('Container not found:', containerId);
+                    return;
+                }
+                
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+                container.innerHTML = users.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                `).join('');
+            }
+
+            function displayStatusGroupPaginated(tabName, users) {
+                let containerId;
+                if (tabName === 'statusApproved') containerId = 'approvedEmails';
+                else if (tabName === 'statusPending') containerId = 'pendingEmails';
+                else if (tabName === 'statusRejected') containerId = 'rejectedEmails';
+
+                const container = document.getElementById(containerId);
+                if (users.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No users found</div>';
+                    return;
+                }
+                container.innerHTML = users.map(user => `
+                <div class="email-row">
+                    <div class="col-name">
+                        <strong>${user.firstname || 'N/A'} ${user.surname || ''}</strong>
+                    </div>
+                    <div class="col-email">
+                        <code>${user.email}</code>
+                    </div>
+                    <div class="col-role">
+                        <span class="badge badge-${user.role.toLowerCase()}">${user.role}</span>
+                    </div>
+                    <div class="col-action">
+                        <button onclick="copyToClipboard('${user.email}', this)" class="btn-copy">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+                `).join('');
+            }
+
+            // Go back to admin panel
+            function goBack() {
+                window.location.href = 'admin.html';
+            }
+        </script>
+
+</body>
+
+</html>
