@@ -36,13 +36,29 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
-        policy.WithOrigins(
-            "http://127.0.0.1:5500",
-            "http://localhost:5500"
-        )
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials());
+    {
+        var isDevelopment = builder.Environment.IsDevelopment();
+        
+        if (isDevelopment)
+        {
+            // Development: Allow local origins
+            policy.WithOrigins(
+                "http://127.0.0.1:5500",
+                "http://localhost:5500",
+                "http://127.0.0.1:3000",
+                "http://localhost:3000"
+            );
+        }
+        else
+        {
+            // Production: Allow Render domain
+            policy.WithOrigins("https://webtracker-oir7.onrender.com");
+        }
+        
+        policy.AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
 });
 
 
