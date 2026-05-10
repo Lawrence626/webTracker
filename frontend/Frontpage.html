@@ -323,6 +323,61 @@
     </div>
   </div>
 
+  <!-- VERIFICATION CODE MODAL -->
+  <div id="verificationCodeModal" class="auth-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="max-width: 500px; width: 95%; background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); overflow: hidden; animation: slideUp 0.3s ease;">
+      <div style="padding: 0;">
+        <!-- Close Button -->
+        <button onclick="closeVerificationModal()" style="position: absolute; top: 20px; right: 20px; background: #f5f5f5; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 24px; color: #999; z-index: 10; display: flex; align-items: center; justify-content: center;">&times;</button>
+
+        <!-- Header Section -->
+        <div style="  background: linear-gradient(135deg, #0066cc 0%, #00b894 100%); padding: 40px 30px; text-align: center; color: white;">
+          <h3 style="font-size: 28px; margin: 0 0 10px 0; font-weight: 700;">📧 Email Verification</h3>
+          <p style="font-size: 14px; margin: 0; opacity: 0.9;" id="verificationSubtext">Verification code has been sent to your email</p>
+        </div>
+
+        <!-- Status Indicator -->
+        <div style="padding: 20px 30px; background: #f9f9f9; border-bottom: 1px solid #e0e0e0; text-align: center;">
+          <div id="verificationStatus" style="font-size: 13px; color: #666;">
+            <i class="fas fa-envelope" style="margin-right: 8px;"></i>Waiting for email to arrive...
+          </div>
+        </div>
+
+        <!-- Form Section -->
+        <form id="verificationCodeForm" onsubmit="handleVerificationCodeSubmit(event)" style="padding: 30px;">
+          <!-- Verification Code Input -->
+          <div style="margin-bottom: 25px;">
+            <label style="display: block; margin-bottom: 10px; font-weight: 600; color: #333; font-size: 14px;">🔐 6-Digit Code</label>
+            <input type="text" id="verificationCodeInput" placeholder="Enter 6-digit code" maxlength="6" pattern="[0-9]*" required style="width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 18px; box-sizing: border-box; transition: border-color 0.3s; text-align: center; letter-spacing: 8px;" onFocus="this.style.borderColor='#667eea'" onBlur="this.style.borderColor='#e0e0e0'" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            <small style="color: #999; display: block; margin-top: 6px; font-size: 12px;">Check your email inbox and spam folder</small>
+          </div>
+
+          <!-- Retry Info -->
+          <div id="retryInfo" style="margin-bottom: 20px; padding: 12px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; display: none;">
+            <small style="color: #856404; display: block;"><strong>💡 Code not received?</strong> Check spam folder or wait a moment</small>
+          </div>
+
+          <!-- Error Messages -->
+          <div id="verificationError" style="margin-bottom: 20px; padding: 12px; background: #f8d7da; border-left: 4px solid #dc3545; border-radius: 4px; display: none;">
+            <small id="verificationErrorText" style="color: #721c24; display: block;"></small>
+          </div>
+
+          <!-- Buttons -->
+          <div style="display: flex; gap: 12px;">
+            <button type="submit" id="verifyBtn" style="flex: 1; padding: 14px;    background: linear-gradient(135deg, #0066cc 0%, #00b894 100%); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 16px; transition: transform 0.2s, box-shadow 0.2s;" onMouseOver="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(102, 126, 234, 0.4)'" onMouseOut="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Verify Code</button>
+            <button type="button" onclick="closeVerificationModal()" style="flex: 1; padding: 14px; background: #f5f5f5; color: #333; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 16px; transition: background 0.2s;" onMouseOver="this.style.background='#efefef'" onMouseOut="this.style.background='#f5f5f5'">Cancel</button>
+          </div>
+
+          <!-- Resend Link -->
+          <div style="text-align: center; margin-top: 20px;">
+            <button type="button" id="resendBtn" onclick="handleResendCode()" style="background: none; border: none; color: #667eea; cursor: pointer; text-decoration: underline; font-size: 13px; font-weight: 500;">Didn't receive code? Resend</button>
+            <span id="resendCountdown" style="font-size: 12px; color: #999; margin-left: 10px; display: none;">Resend available in <span id="countdown">60</span>s</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <style>
     @keyframes slideUp {
       from {
@@ -381,7 +436,14 @@
     const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:5236' 
     : 'https://webtracker-oir7.onrender.com';
-      // Smooth scrolling for navigation links
+
+    // ===== GLOBAL VARIABLES (DECLARE IMMEDIATELY) =====
+    let currentLoginEmail = '';
+    let currentLoginPassword = '';
+    let currentRememberMe = false;
+    let resendCodeTimeout = 0;
+
+    // Smooth scrolling for navigation links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -478,6 +540,7 @@
 
       try {
         //  STEP 1: Verify Email is Legitimate
+        console.log(`📧 Step 1: Verifying email format at: ${API_BASE_URL}/api/auth/verify-email`);
         const verifyRes = await fetch(`${API_BASE_URL}/api/auth/verify-email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -485,6 +548,7 @@
         });
 
         const verifyData = await verifyRes.json();
+        console.log('✅ Email verification result:', verifyData);
 
         if (!verifyData.isValid) {
           alert('⚠️ ' + verifyData.message);
@@ -492,6 +556,7 @@
         }
 
         //  STEP 2: Send Verification Code
+        console.log(`📧 Step 2: Sending login code to: ${API_BASE_URL}/api/auth/send-login-code`);
         const sendCodeRes = await fetch(`${API_BASE_URL}/api/auth/send-login-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -499,46 +564,110 @@
         });
 
         const codeData = await sendCodeRes.json();
+        console.log('✅ Send code response:', codeData);
 
         if (!sendCodeRes.ok) {
-          alert('❌ ' + (codeData.message || 'Login failed'));
+          alert('❌ ' + (codeData.message || 'Failed to send verification code. Please check your credentials and try again.'));
           return;
         }
 
-        // ⏳ Show loading message while email sends
-        alert('⏳ Sending verification code to your email...\nPlease wait...');
+        // Store login info for verification modal
+        currentLoginEmail = email;
+        currentLoginPassword = password;
+        currentRememberMe = rememberMe;
+        resendCodeTimeout = 0;
 
-        //  STEP 3: Show Code Input Dialog
-        const verificationCode = prompt('📧 Verification code sent to your email!\n\nPlease enter the 6-digit code:');
+        //  STEP 3: Show Verification Code Modal
+        console.log('📧 Step 3: Opening verification code modal');
+        openVerificationModal();
+        
+        // Reset form
+        document.getElementById('verificationCodeInput').value = '';
+        document.getElementById('verificationError').style.display = 'none';
+        document.getElementById('retryInfo').style.display = 'none';
+        
+        // Focus on code input
+        setTimeout(() => {
+          document.getElementById('verificationCodeInput').focus();
+        }, 500);
 
-        if (!verificationCode) {
-          alert('❌ Verification cancelled');
-          return;
-        }
+      } catch (err) {
+        console.error('❌ Login error:', err);
+        console.error('Full error details:', {
+          message: err.message,
+          stack: err.stack,
+          apiUrl: API_BASE_URL,
+          hostname: window.location.hostname
+        });
+        alert(`⚠️ Connection error:\n\n${err.message}\n\nAPI: ${API_BASE_URL}\n\nPlease check:\n1. Your internet connection\n2. Email and password are correct\n3. Browser console for details`);
+      }
+    }
 
-        //  STEP 4: Verify the Code
+    // Open verification modal
+    function openVerificationModal() {
+      const modal = document.getElementById('verificationCodeModal');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      console.log('📧 Verification modal opened');
+    }
+
+    // Close verification modal
+    function closeVerificationModal() {
+      const modal = document.getElementById('verificationCodeModal');
+      modal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      document.getElementById('verificationCodeForm').reset();
+      clearResendCountdown();
+      console.log('📧 Verification modal closed');
+    }
+
+    // Handle verification code form submission
+    async function handleVerificationCodeSubmit(e) {
+      e.preventDefault();
+      
+      const code = document.getElementById('verificationCodeInput').value.trim();
+      
+      if (!code || code.length !== 6) {
+        showVerificationError('Please enter a valid 6-digit code');
+        return;
+      }
+
+      const verifyBtn = document.getElementById('verifyBtn');
+      verifyBtn.disabled = true;
+      verifyBtn.innerHTML = '⏳ Verifying...';
+
+      try {
+        console.log(`🔐 Step 4: Verifying code at: ${API_BASE_URL}/api/auth/verify-login-code`);
         const verifyCodeRes = await fetch(`${API_BASE_URL}/api/auth/verify-login-code`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, code: verificationCode })
+          body: JSON.stringify({ email: currentLoginEmail, code: code })
         });
 
         const loginData = await verifyCodeRes.json();
+        console.log('🔐 Verification response:', loginData);
 
         if (!verifyCodeRes.ok) {
-          alert('❌ ' + (loginData.message || 'Invalid verification code'));
+          showVerificationError(loginData.message || 'Invalid verification code. Please try again.');
+          document.getElementById('retryInfo').style.display = 'block';
+          verifyBtn.disabled = false;
+          verifyBtn.innerHTML = 'Verify Code';
           return;
         }
 
-        //  Login successful
+        // ✅ Login successful
+        hideVerificationError();
+        verifyBtn.innerHTML = '✅ Verified!';
+        
         if (loginData.role === 'Admin') {
-          alert(` Email Verified! Welcome Admin ${loginData.firstname}!`);
+          console.log('✅ Admin login successful:', loginData.firstname);
+          alert(`✅ Email Verified! Welcome Admin ${loginData.firstname}!`);
           localStorage.setItem('userRole', 'Admin');
           localStorage.setItem('userEmail', loginData.email);
           localStorage.setItem('userFirstname', loginData.firstname);
           localStorage.setItem('adminId', loginData.adminId || '');
           
-          if (rememberMe) {
+          if (currentRememberMe) {
             localStorage.setItem('rememberMe', 'true');
           }
 
@@ -546,6 +675,7 @@
             window.location.href = 'admin.html';
           }, 500);
         } else if (loginData.role === 'BHW') {
+          console.log('✅ BHW login successful:', loginData.firstname);
           alert(`✅ Email Verified! Welcome BHW ${loginData.firstname}!`);
           localStorage.setItem('userRole', 'BHW');
           localStorage.setItem('userEmail', loginData.email);
@@ -554,7 +684,7 @@
           localStorage.setItem('bhwId', loginData.bhwId || '');
           localStorage.setItem('status', loginData.status);
           
-          if (rememberMe) {
+          if (currentRememberMe) {
             localStorage.setItem('rememberMe', 'true');
           }
 
@@ -563,9 +693,80 @@
           }, 500);
         }
       } catch (err) {
-        console.error('Login error:', err);
-        alert('⚠️ Cannot connect to server. Please check if the server is running.');
+        console.error('❌ Verification error:', err);
+        showVerificationError(`Error: ${err.message}`);
+        verifyBtn.disabled = false;
+        verifyBtn.innerHTML = 'Verify Code';
       }
+    }
+
+    // Handle resend code
+    async function handleResendCode() {
+      if (resendCodeTimeout > 0) {
+        alert(`Please wait ${resendCodeTimeout} seconds before resending`);
+        return;
+      }
+
+      try {
+        console.log(`📧 Resending code to: ${currentLoginEmail}`);
+        const resendRes = await fetch(`${API_BASE_URL}/api/auth/send-login-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: currentLoginEmail, password: currentLoginPassword })
+        });
+
+        const resendData = await resendRes.json();
+        console.log('✅ Resend response:', resendData);
+
+        if (resendRes.ok) {
+          alert('✅ Verification code resent! Check your email.');
+          document.getElementById('verificationCodeInput').value = '';
+          hideVerificationError();
+          startResendCountdown();
+        } else {
+          showVerificationError(resendData.message || 'Failed to resend code');
+        }
+      } catch (err) {
+        console.error('❌ Resend error:', err);
+        showVerificationError(`Error resending: ${err.message}`);
+      }
+    }
+
+    // Show verification error
+    function showVerificationError(message) {
+      const errorDiv = document.getElementById('verificationError');
+      document.getElementById('verificationErrorText').textContent = message;
+      errorDiv.style.display = 'block';
+    }
+
+    // Hide verification error
+    function hideVerificationError() {
+      document.getElementById('verificationError').style.display = 'none';
+    }
+
+    // Start resend countdown
+    function startResendCountdown() {
+      resendCodeTimeout = 60;
+      document.getElementById('resendBtn').disabled = true;
+      document.getElementById('resendCountdown').style.display = 'inline';
+      
+      const interval = setInterval(() => {
+        resendCodeTimeout--;
+        document.getElementById('countdown').textContent = resendCodeTimeout;
+        
+        if (resendCodeTimeout <= 0) {
+          clearInterval(interval);
+          document.getElementById('resendBtn').disabled = false;
+          document.getElementById('resendCountdown').style.display = 'none';
+        }
+      }, 1000);
+    }
+
+    // Clear resend countdown
+    function clearResendCountdown() {
+      resendCodeTimeout = 0;
+      document.getElementById('resendBtn').disabled = false;
+      document.getElementById('resendCountdown').style.display = 'none';
     }
 
     //  FORGOT PASSWORD HANDLER
